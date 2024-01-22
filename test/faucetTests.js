@@ -11,7 +11,7 @@ describe('Faucet', function () {
     const Faucet = await ethers.getContractFactory('Faucet');
     const faucet = await Faucet.deploy();
 
-    const [owner] = await ethers.getSigners();
+    const [owner,owner1] = await ethers.getSigners();
 
     console.log('Signer 1 address: ', owner.address);
     return { faucet, owner, withdrawAmount };
@@ -26,5 +26,9 @@ describe('Faucet', function () {
     const { faucet, withdrawAmount } = await loadFixture(deployContractAndSetVariables);
 
     await expect(faucet.withdraw(withdrawAmount,{ value: withdrawAmount })).to.be.reverted;
+  });
+  it('only the owner should call the  withdrawall function', async function () {
+    const { faucet, owner1 } = await loadFixture(deployContractAndSetVariables);
+    await expect(faucet.connect(owner1).withdrawall()).to.be.reverted;
   });
 });
